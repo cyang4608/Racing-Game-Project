@@ -20,9 +20,13 @@ Shader shader3;
 Model* car;
 Model* wheel1;
 Model* platform1;
+Model* platform2;
+Model* platform3;
+Model* platform4;
+Model* platform5;
 Model* startingLine;
 float rot;
-bool firstPerson = true;
+bool thirdPerson = false;
 bool alt = true;
 //Model *sphere;
 glm::mat4 projection; // projection matrix
@@ -31,7 +35,11 @@ glm::mat4 model; // where the model (i.e., the myModel) is located wrt the camer
 glm::mat4 model2;
 glm::vec3 eye(-100.0f, 300.0f, 20.0f);
 glm::vec3 center(-100.0f, 0.0f, 0.0f);
+glm::vec3 eye1(-100.0f, 300.0f, 20.0f);
+glm::vec3 center1(-100.0f, 0.0f, 0.0f);
 glm::vec3 up(0.0f, 1.0f, 0.0f);
+glm::vec3 eye2(0.0f, 5.0f, 20.0f);
+glm::vec3 center2(0.0f, 0.0f, 0.0f);
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
 //bool keyarr[256];
@@ -95,7 +103,14 @@ void dumpInfo(void)
 /*This gets called when the OpenGL is asked to display. This is where all the main rendering calls go*/
 void display(void)
 {
-
+	if (thirdPerson) {
+		eye = eye2;
+		center = center2;
+	}
+	else {
+		eye = eye1;
+		center = center1;
+	}
 	//glm::rot
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
@@ -103,8 +118,10 @@ void display(void)
 	view = glm::lookAt(eye, center, up);
 	car->render(view * model * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
 
-	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -5.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
+	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -6.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
 	platform1->render(view * model2 * glm::translate(0.0f, -4.0f, 20.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
+	platform2->render(view * model2 * glm::translate(0.0f, -4.0f, -32.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
+	platform3->render(view * model2 * glm::translate(-50.0f, -4.0f, 0.0f) * glm::scale(5.0f, 10.0f, 25.0f) * glm::rotate(45.0f, 0.0f, 0.0f, 0.0f), projection);
 	//wheel1->render(view * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(1.5f, 2.5f, 1.0f) * glm::rotate(90.0f,0.0f,0.0f, 0.0f), projection);
 
 	glutSwapBuffers(); // Swap the buffers.
@@ -128,10 +145,28 @@ void reshape(int w, int h)
 void keyboard(unsigned char key, int x, int y)
 {
 	//glutIgnoreKeyRepeat(key);
+	/*switch (key) {
+	case 27: // this is an ascii value
+		exit(0);
+		break;
+	case 99: // change camera
+		if (thirdPerson) {
+			thirdPerson = false;
+		}
+		else {
+			thirdPerson = true;
+		}
+		break;
+	}*/
+
+	if (key == 't') 
+		thirdPerson = true;
+	if (key == 'b')
+		thirdPerson = false;
 	if (key == 'w') {
 		model *= glm::translate(0.0f, 0.0f, -0.4f);
-		//eye += glm::vec3(0.0f, 0.0f, -0.4f);
-		//center += glm::vec3(0.0f, 0.0f, -0.4f);
+		eye2 += glm::vec3(0.0f, 0.0f, -0.4f);
+		center2 += glm::vec3(0.0f, 0.0f, -0.4f);
 		keyarr['w'] = PUSHED;
 	}
 	if (key == 'a') {
@@ -146,8 +181,8 @@ void keyboard(unsigned char key, int x, int y)
 	}
 	if (key == 's') {
 		model *= glm::translate(0.0f, 0.0f, 0.4f);
-		//eye += glm::vec3(0.0f, 0.0f, 0.4f);
-		//center += glm::vec3(0.0f, 0.0f, 0.4f);
+		eye2 += glm::vec3(0.0f, 0.0f, 0.4f);
+		center2 += glm::vec3(0.0f, 0.0f, 0.4f);
 		keyarr['s'] = PUSHED;
 	}
 	/*
@@ -155,72 +190,6 @@ void keyboard(unsigned char key, int x, int y)
 		model *= glm::rotate(3.0f, 0.0f, 4.0f, 0.0f);
 	}
 	*/
-	/*
-	switch (key) {
-	case 27: // this is an ascii value
-		exit(0);
-		break;
-	case 'a':
-		//walk forward
-		keyarr[int('a')] = PUSHED;
-		model *= glm::rotate(2.0f, 0.0f, 1.0f, 0.0f);
-		break;
-	case 'w':
-		keyarr[int('w')] = PUSHED;
-		model *= glm::translate(0.0f, 0.0f, -0.4f);
-		break;
-	case 's':
-		//walk backward
-		model *= glm::translate(0.0f, 0.0f, 0.4f);
-		break;
-		switch (key) {
-			case 'a':
-				model *= glm::translate(-0.5f, 0.0f, 0.0f);
-				break;
-			case 'd':
-				model *= glm::translate(0.5f, 0.0f, 0.0f);
-				break;
-		}
-	case 'c':
-		//change camera angle
-		if (firstPerson) {
-			!sphere;
-			firstPerson = false;
-			//glm::lookAt(glm::vec3(model,0.0f,0.0f), glm::vec3(0.0f,model,0.0f), glm::vec3(0.0f,0.0f,model));
-		}
-		else {
-			if (key == GLUT_KEY_LEFT) {
-				//turn left
-				printf("Left arrow");
-				view *= glm::rotate(90.0f, 0.0f, 1.0f,0.0f);
-			}else if (key == GLUT_KEY_RIGHT) {
-				//turn right
-				view *= glm::rotate(90.0f, 0.0f, -1.0f, 0.0f);
-			}else if (key == GLUT_KEY_UP) {
-				//look up 45 degrees
-				view *= glm::rotate(45.0f, 1.0f, 0.0f, 0.0f);
-			}else if (key == GLUT_KEY_DOWN) {
-				//look down 45 degrees
-				view *= glm::rotate(45.0f, -1.0f, 0.0f, 0.0f);
-			}
-			firstPerson = true;
-		}
-		break;
-	case 'f':
-		//move forward in direction camera is looking
-		if (!firstPerson) {
-			view *= glm::translate(0.0f, 1.0f,0.0f);
-		}
-		break;
-	case 'v':
-		//move backwards in direction camera is looking
-		if (!firstPerson) {
-			view *= glm::translate(0.0f, -1.0f, 0.0f);
-		}
-		break;
-	}
-	*/
-	glutPostRedisplay();
 }
 
 void keyUp(unsigned char key, int x, int y) {
@@ -250,8 +219,12 @@ int main(int argc, char** argv)
 	//glutIgnoreKeyRepeat;
 	glEnable(GL_DEPTH_TEST);
 	car = new Model(&shader3, "models/dodge-challenger_model.obj", "models/");
-	platform1 = new Model(&shader, "models/plane.obj", "models/");
 	startingLine = new Model(&shader2, "models/plane.obj", "models/");
+	platform1 = new Model(&shader, "models/plane.obj", "models/");
+	platform2 = new Model(&shader, "models/plane.obj", "models/");
+	platform3 = new Model(&shader, "models/plane.obj", "models/");
+	platform4 = new Model(&shader, "models/plane.obj", "models/");
+	platform5 = new Model(&shader, "models/plane.obj", "models/");
 	//wheel1 = new Model(&shader, "models/wheel1.obj", "models/");
 	glutMainLoop();
 

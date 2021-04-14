@@ -1,1 +1,2 @@
-GITHUB PLEASE WORK THIS IS MY 4TH TIME TRYING THIS
+Press t to enable thrid person.
+Press b to enable Arieal View.
