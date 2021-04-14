@@ -24,6 +24,12 @@ Model* platform2;
 Model* platform3;
 Model* platform4;
 Model* platform5;
+Model* platform6;
+Model* platform7;
+Model* platform8;
+Model* platform9;
+Model* platform10;
+Model* platform11;
 Model* startingLine;
 float rot;
 bool thirdPerson = false;
@@ -121,7 +127,16 @@ void display(void)
 	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -6.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
 	platform1->render(view * model2 * glm::translate(0.0f, -4.0f, 20.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
 	platform2->render(view * model2 * glm::translate(0.0f, -4.0f, -32.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
-	platform3->render(view * model2 * glm::translate(-50.0f, -4.0f, 0.0f) * glm::scale(5.0f, 10.0f, 25.0f) * glm::rotate(45.0f, 0.0f, 0.0f, 0.0f), projection);
+	platform3->render(view * model2 * glm::translate(-45.0f, -4.0f, -55.0f) * glm::scale(50.0f, 10.0f, 5.0f), projection);
+	platform4->render(view * model2 * glm::translate(-100.0f, -4.0f, -75.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
+	platform5->render(view * model2 * glm::translate(-120.0f, -4.0f, -100.0f) * glm::scale(25.0f, 10.0f, 5.0f), projection);
+	platform6->render(view * model2 * glm::translate(-140.0f, -4.0f, -75.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
+	platform7->render(view * model2 * glm::translate(-190.0f, -4.0f, -55.0f) * glm::scale(50.0f, 10.0f, 5.0f), projection);
+	platform8->render(view * model2 * glm::translate(-235.0f, -4.0f, 20.0f) * glm::scale(5.0f, 10.0f, 75.0f), projection);
+	platform9->render(view * model2 * glm::translate(-160.0f, -4.0f, 90.0f) * glm::scale(75.0f, 10.0f, 5.0f), projection);
+	platform10->render(view * model2 * glm::translate(-90.0f, -4.0f, 70.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
+	platform11->render(view * model2 * glm::translate(-40.0f, -4.0f, 50.0f) * glm::scale(45.0f, 10.0f, 5.0f), projection);
+
 	//wheel1->render(view * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(1.5f, 2.5f, 1.0f) * glm::rotate(90.0f,0.0f,0.0f, 0.0f), projection);
 
 	glutSwapBuffers(); // Swap the buffers.
@@ -225,6 +240,12 @@ int main(int argc, char** argv)
 	platform3 = new Model(&shader, "models/plane.obj", "models/");
 	platform4 = new Model(&shader, "models/plane.obj", "models/");
 	platform5 = new Model(&shader, "models/plane.obj", "models/");
+	platform6 = new Model(&shader, "models/plane.obj", "models/");
+	platform7 = new Model(&shader, "models/plane.obj", "models/");
+	platform8 = new Model(&shader, "models/plane.obj", "models/");
+	platform9 = new Model(&shader, "models/plane.obj", "models/");
+	platform10 = new Model(&shader, "models/plane.obj", "models/");
+	platform11 = new Model(&shader, "models/plane.obj", "models/");
 	//wheel1 = new Model(&shader, "models/wheel1.obj", "models/");
 	glutMainLoop();
 
