@@ -92,6 +92,7 @@
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\black.frag" />
     <None Include="shaders\green.frag" />
     <None Include="shaders\phong.frag" />
     <None Include="shaders\phong.vert" />

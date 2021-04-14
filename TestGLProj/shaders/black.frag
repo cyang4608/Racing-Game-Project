@@ -17,7 +17,7 @@ void main()
     float Ks = pow(max(dot(Half, Normal), 0.0), 80.0);
     float Ka = 0.0;
 
-    vec4 diffuse  = Kd * vec4(0,1,0,1); // white
+    vec4 diffuse  = Kd * vec4(0,0,0,1); // black
     vec4 specular = Ks * vec4(0,0,0,1); // black
 
 

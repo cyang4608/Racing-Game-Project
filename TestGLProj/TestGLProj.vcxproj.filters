@@ -49,5 +49,8 @@
     <None Include="shaders\phong.vert">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="shaders\black.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

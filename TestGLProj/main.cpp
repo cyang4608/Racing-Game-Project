@@ -15,8 +15,12 @@
 #include <string.h>
 
 Shader shader; // loads our vertex and fragment shaders
+Shader shader2;
+Shader shader3;
 Model* car;
 Model* wheel1;
+Model* platform1;
+Model* startingLine;
 float rot;
 bool firstPerson = true;
 bool alt = true;
@@ -24,6 +28,10 @@ bool alt = true;
 glm::mat4 projection; // projection matrix
 glm::mat4 view; // where the camera is looking
 glm::mat4 model; // where the model (i.e., the myModel) is located wrt the camera
+glm::mat4 model2;
+glm::vec3 eye(-100.0f, 300.0f, 20.0f);
+glm::vec3 center(-100.0f, 0.0f, 0.0f);
+glm::vec3 up(0.0f, 1.0f, 0.0f);
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
 //bool keyarr[256];
@@ -41,6 +49,16 @@ void initShader(void)
 	shader.InitializeFromFile("shaders/phong.vert", "shaders/phong.frag");
 	shader.AddAttribute("vertexPosition");
 	shader.AddAttribute("vertexNormal");
+
+	//green shading
+	shader2.InitializeFromFile("shaders/phong.vert", "shaders/green.frag");
+	shader2.AddAttribute("vertexPosition");
+	shader2.AddAttribute("vertexNormal");
+
+	//black shading
+	shader3.InitializeFromFile("shaders/phong.vert", "shaders/black.frag");
+	shader3.AddAttribute("vertexPosition");
+	shader3.AddAttribute("vertexNormal");
 
 	checkError("initShader");
 }
@@ -81,8 +99,12 @@ void display(void)
 	//glm::rot
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
-	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	car->render(view * model * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
+	//view = view * glm::translate(0.0f, -0.5f, -fpcPos) * glm::rotate(view, -fpcRotate, x2);
+	view = glm::lookAt(eye, center, up);
+	car->render(view * model * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
+
+	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -5.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
+	platform1->render(view * model2 * glm::translate(0.0f, -4.0f, 20.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
 	//wheel1->render(view * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(1.5f, 2.5f, 1.0f) * glm::rotate(90.0f,0.0f,0.0f, 0.0f), projection);
 
 	glutSwapBuffers(); // Swap the buffers.
@@ -108,6 +130,8 @@ void keyboard(unsigned char key, int x, int y)
 	//glutIgnoreKeyRepeat(key);
 	if (key == 'w') {
 		model *= glm::translate(0.0f, 0.0f, -0.4f);
+		//eye += glm::vec3(0.0f, 0.0f, -0.4f);
+		//center += glm::vec3(0.0f, 0.0f, -0.4f);
 		keyarr['w'] = PUSHED;
 	}
 	if (key == 'a') {
@@ -122,6 +146,8 @@ void keyboard(unsigned char key, int x, int y)
 	}
 	if (key == 's') {
 		model *= glm::translate(0.0f, 0.0f, 0.4f);
+		//eye += glm::vec3(0.0f, 0.0f, 0.4f);
+		//center += glm::vec3(0.0f, 0.0f, 0.4f);
 		keyarr['s'] = PUSHED;
 	}
 	/*
@@ -223,7 +249,9 @@ int main(int argc, char** argv)
 	glutKeyboardUpFunc(keyboard);
 	//glutIgnoreKeyRepeat;
 	glEnable(GL_DEPTH_TEST);
-	car = new Model(&shader, "models/dodge-challenger_model.obj", "models/");
+	car = new Model(&shader3, "models/dodge-challenger_model.obj", "models/");
+	platform1 = new Model(&shader, "models/plane.obj", "models/");
+	startingLine = new Model(&shader2, "models/plane.obj", "models/");
 	//wheel1 = new Model(&shader, "models/wheel1.obj", "models/");
 	glutMainLoop();
 
