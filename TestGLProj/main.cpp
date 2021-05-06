@@ -43,9 +43,17 @@ glm::vec3 eye(-100.0f, 300.0f, 20.0f);
 glm::vec3 center(-100.0f, 0.0f, 0.0f);
 glm::vec3 eye1(-100.0f, 300.0f, 20.0f);
 glm::vec3 center1(-100.0f, 0.0f, 0.0f);
-glm::vec3 up(0.0f, 1.0f, 0.0f);
+glm::vec4 up(0.0f, 1.0f, 0.0f,0.0f);
 glm::vec3 eye2(0.0f, 5.0f, 20.0f);
 glm::vec3 center2(0.0f, 0.0f, 0.0f);
+//Variables Added 5/6/21
+glm::mat4 carTrans;
+float rotation = 0.0f;
+glm::vec4 move(0.0f, 0.0f, 15.0f, 1.0f);
+glm::vec4 lookatdirection(0,0,-1,0);
+float cameradistance = 20;
+float cameraheight = 5;
+//End
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
 //bool keyarr[256];
@@ -121,8 +129,9 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
 	//view = view * glm::translate(0.0f, -0.5f, -fpcPos) * glm::rotate(view, -fpcRotate, x2);
-	view = glm::lookAt(eye, center, up);
-	car->render(view * model * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
+	view = glm::lookAt(glm::vec3(move - (glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection * cameradistance) + glm::vec4(0.0f, cameraheight, 0.0f, 0.0f)), glm::vec3(move), glm::vec3(up));
+	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation, 0.0f,1.0f, 0.0f);
+	car->render(view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
 
 	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -6.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
 	platform1->render(view * model2 * glm::translate(0.0f, -4.0f, 20.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
@@ -173,31 +182,42 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		break;
 	}*/
-
+	glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection;
+	glm::vec4 x1 = glm::vec4(glm::normalize(glm::cross(glm::vec3(up), glm::vec3(lookatdir))), 0.0f);
 	if (key == 't') 
 		thirdPerson = true;
 	if (key == 'b')
 		thirdPerson = false;
 	if (key == 'w') {
+		/*
 		model *= glm::translate(0.0f, 0.0f, -0.4f);
 		eye2 += glm::vec3(0.0f, 0.0f, -0.4f);
 		center2 += glm::vec3(0.0f, 0.0f, -0.4f);
 		keyarr['w'] = PUSHED;
+		*/
+		move += lookatdir;
 	}
 	if (key == 'a') {
 		//model *= glm::translate(0.0f, 0.0f, -0.4f);
-		model *= glm::rotate(2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+		//model *= glm::rotate(2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+		move += lookatdir;
+		rotation += 5.0f;
 		keyarr['a'] = PUSHED;
 	}
 	if (key == 'd') {
 		//model *= glm::translate(0.0f, 0.0f, -0.4f);
-		model *= glm::rotate(-2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+		//model *= glm::rotate(-2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+		rotation -= 5.0f;
+		move += lookatdir;
 		keyarr['d'] = PUSHED;
 	}
 	if (key == 's') {
+		/*
 		model *= glm::translate(0.0f, 0.0f, 0.4f);
 		eye2 += glm::vec3(0.0f, 0.0f, 0.4f);
 		center2 += glm::vec3(0.0f, 0.0f, 0.4f);
+		*/
+		move -= lookatdir;
 		keyarr['s'] = PUSHED;
 	}
 	/*
