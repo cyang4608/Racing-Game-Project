@@ -47,6 +47,7 @@ glm::vec4 up(0.0f, 1.0f, 0.0f,0.0f);
 glm::vec3 eye2(0.0f, 5.0f, 20.0f);
 glm::vec3 center2(0.0f, 0.0f, 0.0f);
 //Variables Added 5/6/21
+float turning = 0.0;
 glm::mat4 carTrans;
 float rotation = 0.0f;
 glm::vec4 move(0.0f, 0.0f, 15.0f, 1.0f);
@@ -130,7 +131,7 @@ void display(void)
 	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
 	//view = view * glm::translate(0.0f, -0.5f, -fpcPos) * glm::rotate(view, -fpcRotate, x2);
 	view = glm::lookAt(glm::vec3(move - (glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection * cameradistance) + glm::vec4(0.0f, cameraheight, 0.0f, 0.0f)), glm::vec3(move), glm::vec3(up));
-	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation, 0.0f,1.0f, 0.0f);
+	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation + turning, 0.0f, 1.0f, 0.0f);
 	car->render(view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
 
 	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -6.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
@@ -193,20 +194,24 @@ void keyboard(unsigned char key, int x, int y)
 		model *= glm::translate(0.0f, 0.0f, -0.4f);
 		eye2 += glm::vec3(0.0f, 0.0f, -0.4f);
 		center2 += glm::vec3(0.0f, 0.0f, -0.4f);
-		keyarr['w'] = PUSHED;
 		*/
+		turning = 0;
 		move += lookatdir;
+		keyarr['w'] = PUSHED;
 	}
 	if (key == 'a') {
 		//model *= glm::translate(0.0f, 0.0f, -0.4f);
 		//model *= glm::rotate(2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+		turning = 10;
 		move += lookatdir;
 		rotation += 5.0f;
 		keyarr['a'] = PUSHED;
 	}
 	if (key == 'd') {
+
 		//model *= glm::translate(0.0f, 0.0f, -0.4f);
 		//model *= glm::rotate(-2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+		turning = -10;
 		rotation -= 5.0f;
 		move += lookatdir;
 		keyarr['d'] = PUSHED;
@@ -217,6 +222,7 @@ void keyboard(unsigned char key, int x, int y)
 		eye2 += glm::vec3(0.0f, 0.0f, 0.4f);
 		center2 += glm::vec3(0.0f, 0.0f, 0.4f);
 		*/
+		turning = 0;
 		move -= lookatdir;
 		keyarr['s'] = PUSHED;
 	}
