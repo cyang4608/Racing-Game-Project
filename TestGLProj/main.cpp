@@ -94,6 +94,8 @@ float cameraheight = 5;
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
 //bool keyarr[256];
+glm::vec4 lightPosition = glm::vec4(0.0f, 3.0f, 0.0f, 1.0f);
+
 /* report GL errors, if any, to stderr */
 void checkError(const char* functionName)
 {
@@ -187,6 +189,16 @@ void display(void)
 	//view = view * glm::translate(0.0f, -0.5f, -fpcPos) * glm::rotate(view, -fpcRotate, x2);
 	view = glm::lookAt(glm::vec3(move - (glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection * cameradistance) + glm::vec4(0.0f, cameraheight, 0.0f, 0.0f)), glm::vec3(move), glm::vec3(up));
 	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation + turning, 0.0f, 1.0f, 0.0f);
+
+	shader.SetUniform("lightPosition", view * lightPosition);
+	shader.SetUniform("lightDiffuse", glm::vec4(1.0, 1.0, 1.0, 1.0));
+	shader.SetUniform("lightSpecular", glm::vec4(1.0, 1.0, 1.0, 1.0));
+	shader.SetUniform("lightAmbient", glm::vec4(1.0, 1.0, 1.0, 1.0));
+	shader.SetUniform("surfaceDiffuse", glm::vec4(1.0, 1.0, 1.0, 1.0));
+	shader.SetUniform("surfaceSpecular", glm::vec4(1.0, 1.0, 1.0, 1.0));
+	shader.SetUniform("surfaceAmbient", glm::vec4(1.0, 1.0, 1.0, 1.0));
+
+
 	car->render(view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
 
 	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -6.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
