@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#define GLM_SWIZZLE
+#include <glm/glm.hpp>
 
 Shader shaderWhite; // loads our vertex and fragment shaders
 Shader shaderGreen;
@@ -22,6 +24,7 @@ Shader shaderRed;
 Shader shaderBlue;
 Shader shaderBrown;
 Model* car;
+Model* aiCar;
 Model* wheel1;
 Model* platform1;
 Model* platform2;
@@ -70,11 +73,13 @@ Model* pressbox;
 float rot;
 bool thirdPerson = false;
 bool alt = true;
+bool collision = false;
 //Model *sphere;
 glm::mat4 projection; // projection matrix
 glm::mat4 view; // where the camera is looking
 glm::mat4 model; // where the model (i.e., the myModel) is located wrt the camera
 glm::mat4 model2;
+glm::mat4 temp;
 glm::vec3 eye(-100.0f, 300.0f, 20.0f);
 glm::vec3 center(-100.0f, 0.0f, 0.0f);
 glm::vec3 eye1(-100.0f, 300.0f, 20.0f);
@@ -82,6 +87,7 @@ glm::vec3 center1(-100.0f, 0.0f, 0.0f);
 glm::vec4 up(0.0f, 1.0f, 0.0f,0.0f);
 glm::vec3 eye2(0.0f, 5.0f, 20.0f);
 glm::vec3 center2(0.0f, 0.0f, 0.0f);
+glm::vec3 carPos;
 //Variables Added 5/6/21
 float turning = 0.0;
 glm::mat4 carTrans;
@@ -90,6 +96,9 @@ glm::vec4 move(0.0f, 0.0f, 15.0f, 1.0f);
 glm::vec4 lookatdirection(0,0,-1,0);
 float cameradistance = 20;
 float cameraheight = 5;
+float aiCarx = 0;
+float aiCary = -2;
+float aiCarz = 0;
 //End
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
@@ -175,6 +184,12 @@ void dumpInfo(void)
 /*This gets called when the OpenGL is asked to display. This is where all the main rendering calls go*/
 void display(void)
 {
+	if (aiCarz < -49.0f && aiCarz > -50.0f) {
+		//model = glm::rotate(model, glm::radians(45.0f), 0.0f, 1.0f, 0.0f); 
+	}
+	else {
+		aiCarz -= 0.3;
+	}
 	if (thirdPerson) {
 		eye = eye2;
 		center = center2;
@@ -189,6 +204,9 @@ void display(void)
 	view = glm::lookAt(glm::vec3(move - (glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection * cameradistance) + glm::vec4(0.0f, cameraheight, 0.0f, 0.0f)), glm::vec3(move), glm::vec3(up));
 	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation + turning, 0.0f, 1.0f, 0.0f);
 	car->render(view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
+	aiCar->render(view * model * glm::translate(aiCarx, -2.0f, aiCarz) * glm::scale(1.5f, 2.5f, 1.0f), projection);
+	temp = view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f);
+	carPos = glm::vec3(move);
 
 	startingLine->render(view * model2 * glm::translate(0.0f, -4.0f, -6.0f) * glm::scale(5.0f, 10.0f, 1.0f), projection);
 	bleachers->render(view * model2 * glm::translate(13.0f, -4.0f, 6.0f) * glm::rotate(90.0f,0.0f,1.0f,0.0f), projection);
@@ -259,6 +277,24 @@ void reshape(int w, int h)
 /*Called when a normal key is pressed*/
 void keyboard(unsigned char key, int x, int y)
 {
+	if (!(carPos.x < 6.1f || carPos.x > 17.1f || carPos.z < -47.1f || carPos.z > 58.7f))
+		collision = true;
+	else if (!(carPos.x < -52.8f || carPos.x > -15.2f || carPos.z < -27.4f || carPos.z > 41.0f))
+		collision = true;
+	else if (!(carPos.x < -51.8f || carPos.x > -17.8f || carPos.z < 57.36f || carPos.z > 62.51f))
+		collision = true;
+	else if (!(carPos.x < -175.16f || carPos.x > -81.16f || carPos.z < -47.16f || carPos.z > 34.93f))
+		collision = true;
+	else if (!(carPos.x < -263.84f || carPos.x > -249.8f || carPos.z < -40.14f || carPos.z > 81.0f))
+		collision = true;
+	else if (!(carPos.x < -220.54f || carPos.x > -206.5f || carPos.z < -40.14f || carPos.z > 81.0f))
+		collision = true;
+	else if (!(carPos.x < -166.3f || carPos.x > -153.47f || carPos.z < 65.56f || carPos.z > 78.67f))
+		collision = true;
+	else if (!(carPos.x < -166.3f || carPos.x > -153.47f || carPos.z < 100.87f || carPos.z > 113.0f))
+		collision = true;
+	else
+		collision = false;
 	//glutIgnoreKeyRepeat(key);
 
 	glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection;
@@ -272,33 +308,38 @@ void keyboard(unsigned char key, int x, int y)
 		thirdPerson = true;
 	if (key == 'b')
 		thirdPerson = false;
-	if (key == 'w') {
-		turning = 0;
-		move += lookatdir;
+	if (key == 'w') { //x -166.3 - -153.47 z 78.67 - 65.56
+		if (!collision) {
+			turning = 0;
+			move += lookatdir;
+		}
 		keyarr['w'] = PUSHED;
 	}
 	if (key == 'a') {
-
-		turning = 10;
-		move += lookatdir;
-		rotation += 5.0f;
+		if (!collision) {
+			turning = 10;
+			move += lookatdir;
+			rotation += 5.0f;
+		}
 		keyarr['a'] = PUSHED;
 	}
 	if (key == 'd') {
 
-
-		turning = -10;
-		rotation -= 5.0f;
-		move += lookatdir;
+		if (!collision) {
+			turning = -10;
+			rotation -= 5.0f;
+			move += lookatdir;
+		}
 		keyarr['d'] = PUSHED;
 	}
 	if (key == 's') {
-
 		turning = 0;
 		move -= lookatdir;
 		keyarr['s'] = PUSHED;
 	}
-
+	if (key == 'p') {
+		printf("Car's position: (%f %f %f)\n", carPos.x, carPos.y, carPos.z);
+	}
 }
 
 void keyUp(unsigned char key, int x, int y) {
@@ -331,7 +372,8 @@ int main(int argc, char** argv)
 	glutKeyboardUpFunc(keyboard);
 	//glutIgnoreKeyRepeat;
 	glEnable(GL_DEPTH_TEST);
-	car = new Model(&shaderWhite, "models/dodge-challenger_model.obj", "models/");
+	car = new Model(&shaderWhite, "models/dodge-challenger_model.obj", "models/"); 
+	aiCar = new Model(&shaderWhite, "models/dodge-challenger_model.obj", "models/");
 	startingLine = new Model(&shaderGreen, "models/plane.obj", "models/");
 	platform1 = new Model(&shaderBlack, "models/plane.obj", "models/");
 	platform2 = new Model(&shaderBlack, "models/plane.obj", "models/");
