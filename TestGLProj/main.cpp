@@ -93,7 +93,7 @@ float cameraheight = 5;
 //End
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
-glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 0.1f, 0.0f) * lookatdirection;
+
 
 //bool keyarr[256];
 /* report GL errors, if any, to stderr */
@@ -261,7 +261,7 @@ void keyboard(unsigned char key, int x, int y)
 {
 	//glutIgnoreKeyRepeat(key);
 
-	//glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection;
+	glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection;
 
 	//esc to quit application
 	if (key == 27)
