@@ -14,13 +14,13 @@
 #include <stdio.h>
 #include <string.h>
 
-Shader shader; // loads our vertex and fragment shaders
-Shader shader2;
-Shader shader3;
-Shader shader4;
-Shader shader5;
-Shader shader6;
-Shader shader7;
+Shader shaderWhite; // loads our vertex and fragment shaders
+Shader shaderGreen;
+Shader shaderBlack;
+Shader shaderYellow;
+Shader shaderRed;
+Shader shaderBlue;
+Shader shaderBrown;
 Model* car;
 Model* wheel1;
 Model* platform1;
@@ -93,6 +93,8 @@ float cameraheight = 5;
 //End
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
+glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 0.1f, 0.0f) * lookatdirection;
+
 //bool keyarr[256];
 /* report GL errors, if any, to stderr */
 void checkError(const char* functionName)
@@ -105,39 +107,39 @@ void checkError(const char* functionName)
 
 void initShader(void)
 {
-	shader.InitializeFromFile("shaders/phong.vert", "shaders/phong.frag");
-	shader.AddAttribute("vertexPosition");
-	shader.AddAttribute("vertexNormal");
+	shaderWhite.InitializeFromFile("shaders/phong.vert", "shaders/phong.frag");
+	shaderWhite.AddAttribute("vertexPosition");
+	shaderWhite.AddAttribute("vertexNormal");
 
 	//green shading
-	shader2.InitializeFromFile("shaders/phong.vert", "shaders/green.frag");
-	shader2.AddAttribute("vertexPosition");
-	shader2.AddAttribute("vertexNormal");
+	shaderGreen.InitializeFromFile("shaders/phong.vert", "shaders/green.frag");
+	shaderGreen.AddAttribute("vertexPosition");
+	shaderGreen.AddAttribute("vertexNormal");
 
 	//black shading
-	shader3.InitializeFromFile("shaders/phong.vert", "shaders/black.frag");
-	shader3.AddAttribute("vertexPosition");
-	shader3.AddAttribute("vertexNormal");
+	shaderBlack.InitializeFromFile("shaders/phong.vert", "shaders/black.frag");
+	shaderBlack.AddAttribute("vertexPosition");
+	shaderBlack.AddAttribute("vertexNormal");
 
 	//yellow shading
-	shader4.InitializeFromFile("shaders/phong.vert", "shaders/yellow.frag");
-	shader4.AddAttribute("vertexPosition");
-	shader4.AddAttribute("vertexNormal");
+	shaderYellow.InitializeFromFile("shaders/phong.vert", "shaders/yellow.frag");
+	shaderYellow.AddAttribute("vertexPosition");
+	shaderYellow.AddAttribute("vertexNormal");
 	
 	//red
-	shader5.InitializeFromFile("shaders/phong.vert", "shaders/red.frag");
-	shader5.AddAttribute("vertexPosition");
-	shader5.AddAttribute("vertexNormal");
+	shaderRed.InitializeFromFile("shaders/phong.vert", "shaders/red.frag");
+	shaderRed.AddAttribute("vertexPosition");
+	shaderRed.AddAttribute("vertexNormal");
 	checkError("initShader");
 
-	shader6.InitializeFromFile("shaders/phong.vert", "shaders/blue.frag");
-	shader6.AddAttribute("vertexPosition");
-	shader6.AddAttribute("vertexNormal");
+	shaderBlue.InitializeFromFile("shaders/phong.vert", "shaders/blue.frag");
+	shaderBlue.AddAttribute("vertexPosition");
+	shaderBlue.AddAttribute("vertexNormal");
 	checkError("initShader");
 
-	shader7.InitializeFromFile("shaders/phong.vert", "shaders/brown.frag");
-	shader7.AddAttribute("vertexPosition");
-	shader7.AddAttribute("vertexNormal");
+	shaderBrown.InitializeFromFile("shaders/phong.vert", "shaders/brown.frag");
+	shaderBrown.AddAttribute("vertexPosition");
+	shaderBrown.AddAttribute("vertexNormal");
 	checkError("initShader");
 }
 
@@ -184,7 +186,6 @@ void display(void)
 	//glm::rot
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
-	//view = view * glm::translate(0.0f, -0.5f, -fpcPos) * glm::rotate(view, -fpcRotate, x2);
 	view = glm::lookAt(glm::vec3(move - (glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection * cameradistance) + glm::vec4(0.0f, cameraheight, 0.0f, 0.0f)), glm::vec3(move), glm::vec3(up));
 	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation + turning, 0.0f, 1.0f, 0.0f);
 	car->render(view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
@@ -199,6 +200,7 @@ void display(void)
 	tree5->render(view * model2 * glm::translate(-50.0f, -4.0f, 40.0f) * glm::scale(1.5f, 1.5f, 1.5f), projection);
 	tree6->render(view * model2 * glm::translate(-50.0f, -4.0f, 60.0f) * glm::scale(1.5f, 1.5f, 1.5f), projection);
 	field->render(view * model2 * glm::translate(0.0f, -5.0f, -7.0f) * glm::scale(300.0f, 1.0f, 200.0f), projection);
+
 	platform1->render(view * model2 * glm::translate(0.0f, -4.0f, 20.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
 	platform2->render(view * model2 * glm::translate(0.0f, -4.0f, -32.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
 	platform3->render(view * model2 * glm::translate(-45.0f, -4.0f, -55.0f) * glm::scale(50.0f, 10.0f, 5.0f), projection);
@@ -210,6 +212,7 @@ void display(void)
 	platform9->render(view * model2 * glm::translate(-160.0f, -4.0f, 90.0f) * glm::scale(75.0f, 10.0f, 5.0f), projection);
 	platform10->render(view * model2 * glm::translate(-90.0f, -4.0f, 70.0f) * glm::scale(5.0f, 10.0f, 25.0f), projection);
 	platform11->render(view * model2 * glm::translate(-40.0f, -4.0f, 50.0f) * glm::scale(45.0f, 10.0f, 5.0f), projection);
+
 	racebanner->render(view * model2 * glm::translate(5.5f, 0.0f, -5.0f) * glm::rotate(90.0f,0.0f,1.0f,0.0f)* glm::scale(1.2f, 1.2f, 1.2f), projection);
 	line->render(view * model2 * glm::translate(0.0f, -3.9f, -16.0f) * glm::rotate(90.0f,0.0f,1.0f,0.0f) * glm::scale(2.0f,2.0f,2.0f), projection);
 	line2->render(view * model2 * glm::translate(-40.0f, -3.9f, -55.0f) * glm::rotate(180.0f, 0.0f, 1.0f, 0.0f) * glm::scale(2.0f, 2.0f, 2.0f), projection);
@@ -225,7 +228,7 @@ void display(void)
 	line12->render(view * model2 * glm::translate(-40.0f, -3.9f, 50.0f) * glm::rotate(0.0f, 0.0f, 1.0f, 0.0f) * glm::scale(2.0f, 2.0f, 2.0f), projection);
 	line13->render(view * model2 * glm::translate(-90.0f, -3.9f, 80.0f) * glm::rotate(90.0f, 0.0f, 1.0f, 0.0f) * glm::scale(2.0f, 2.0f, 2.0f), projection);
 	line14->render(view * model2 * glm::translate(-180.0f, -3.9f, -55.0f) * glm::rotate(0.0f, 0.0f, 1.0f, 0.0f) * glm::scale(2.0f, 2.0f, 2.0f), projection);
-	//wheel1->render(view * glm::translate(0.0f, -2.0f, 0.0f) * glm::scale(1.5f, 2.5f, 1.0f) * glm::rotate(90.0f,0.0f,0.0f, 0.0f), projection);
+
 	building->render(view * model2 * glm::translate(-130.0f, -4.0f, -6.0f) * glm::scale(5.0f,5.0f,5.0f), projection);
 	tube->render(view * model2 * glm::translate(-235.0f, -4.0f, 20.0f) * glm::rotate(90.0f, 0.0f, 1.0f, 0.0f) * glm::scale(8.0f, 8.0f, 8.0f), projection);
 	arrow->render(view * model2 * glm::translate(0.0f, 0.0f,-65.0f) * glm::rotate(90.0f,0.0f,1.0f,0.0f) *glm::rotate(-90.0f, 1.0f,0.0f,0.0f), projection);
@@ -234,6 +237,7 @@ void display(void)
 	billboard2->render(view * model2 * glm::translate(-65.0f, -4.0f, 87.0f) * glm::rotate(180.0f, 0.0f,1.0f,0.0f) * glm::scale(5.0f, 5.0f, 5.0f), projection);
 	text->render(view * model2 * glm::translate(-125.0f, 2.0f, -55.0f) * glm::scale(5.0f, 5.0f, 5.0f), projection);
 	text2->render(view * model2 * glm::translate(-65.0f, 2.0f, 87.0f) * glm::rotate(180.0f, 0.0f, 1.0f, 0.0f) * glm::scale(5.0f, 5.0f, 5.0f), projection);
+
 	glutSwapBuffers(); // Swap the buffers.
 	checkError("display");
 }
@@ -241,6 +245,7 @@ void display(void)
 /*This gets called when nothing is happening (OFTEN)*/
 void idle()
 {
+
 	glutPostRedisplay(); // create a display event. Display calls as fast as CPU will allow when put in the idle function
 }
 
@@ -255,38 +260,25 @@ void reshape(int w, int h)
 void keyboard(unsigned char key, int x, int y)
 {
 	//glutIgnoreKeyRepeat(key);
-	/*switch (key) {
-	case 27: // this is an ascii value
+
+	//glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection;
+
+	//esc to quit application
+	if (key == 27)
+	{
 		exit(0);
-		break;
-	case 99: // change camera
-		if (thirdPerson) {
-			thirdPerson = false;
-		}
-		else {
-			thirdPerson = true;
-		}
-		break;
-	}*/
-	glm::vec4 lookatdir = glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection;
-	glm::vec4 x1 = glm::vec4(glm::normalize(glm::cross(glm::vec3(up), glm::vec3(lookatdir))), 0.0f);
+	}
 	if (key == 't') 
 		thirdPerson = true;
 	if (key == 'b')
 		thirdPerson = false;
 	if (key == 'w') {
-		/*
-		model *= glm::translate(0.0f, 0.0f, -0.4f);
-		eye2 += glm::vec3(0.0f, 0.0f, -0.4f);
-		center2 += glm::vec3(0.0f, 0.0f, -0.4f);
-		*/
 		turning = 0;
 		move += lookatdir;
 		keyarr['w'] = PUSHED;
 	}
 	if (key == 'a') {
-		//model *= glm::translate(0.0f, 0.0f, -0.4f);
-		//model *= glm::rotate(2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+
 		turning = 10;
 		move += lookatdir;
 		rotation += 5.0f;
@@ -294,28 +286,19 @@ void keyboard(unsigned char key, int x, int y)
 	}
 	if (key == 'd') {
 
-		//model *= glm::translate(0.0f, 0.0f, -0.4f);
-		//model *= glm::rotate(-2.0f, 0.0f, 1.0f, 0.0f) * glm::translate(0.0f, 0.0f, -0.4f);
+
 		turning = -10;
 		rotation -= 5.0f;
 		move += lookatdir;
 		keyarr['d'] = PUSHED;
 	}
 	if (key == 's') {
-		/*
-		model *= glm::translate(0.0f, 0.0f, 0.4f);
-		eye2 += glm::vec3(0.0f, 0.0f, 0.4f);
-		center2 += glm::vec3(0.0f, 0.0f, 0.4f);
-		*/
+
 		turning = 0;
 		move -= lookatdir;
 		keyarr['s'] = PUSHED;
 	}
-	/*
-	if (key == 'a' && key == 'w') {
-		model *= glm::rotate(3.0f, 0.0f, 4.0f, 0.0f);
-	}
-	*/
+
 }
 
 void keyUp(unsigned char key, int x, int y) {
@@ -323,6 +306,10 @@ void keyUp(unsigned char key, int x, int y) {
 		keyarr['a'] = NOTPUSHED;
 	if (key == 'w')
 		keyarr['w'] = NOTPUSHED;
+	if (key == 's')
+		keyarr['s'] = NOTPUSHED;
+	if (key == 'd')
+		keyarr['d'] = NOTPUSHED;
 
 	glutPostRedisplay();
 }
@@ -344,51 +331,51 @@ int main(int argc, char** argv)
 	glutKeyboardUpFunc(keyboard);
 	//glutIgnoreKeyRepeat;
 	glEnable(GL_DEPTH_TEST);
-	car = new Model(&shader, "models/dodge-challenger_model.obj", "models/");
-	startingLine = new Model(&shader2, "models/plane.obj", "models/");
-	platform1 = new Model(&shader3, "models/plane.obj", "models/");
-	platform2 = new Model(&shader3, "models/plane.obj", "models/");
-	platform3 = new Model(&shader3, "models/plane.obj", "models/");
-	platform4 = new Model(&shader3, "models/plane.obj", "models/");
-	platform5 = new Model(&shader3, "models/plane.obj", "models/");
-	platform6 = new Model(&shader3, "models/plane.obj", "models/");
-	platform7 = new Model(&shader3, "models/plane.obj", "models/");
-	platform8 = new Model(&shader3, "models/plane.obj", "models/");
-	platform9 = new Model(&shader3, "models/plane.obj", "models/");
-	platform10 = new Model(&shader3, "models/plane.obj", "models/");
-	platform11 = new Model(&shader3, "models/plane.obj", "models/");
-	bleachers = new Model(&shader7, "models/bleachers.obj", "models/");
-	pressbox = new Model(&shader7, "models/pressbox.obj", "models/");
-	field = new Model(&shader2, "models/plane.obj", "models/");
-	tree = new Model(&shader2, "models/tree.obj", "models/");
-	tree2 = new Model(&shader2, "models/tree.obj", "models/");
-	tree3 = new Model(&shader2, "models/tree.obj", "models/");
-	tree4 = new Model(&shader2, "models/tree.obj", "models/");
-	tree5 = new Model(&shader2, "models/tree.obj", "models/");
-	tree6 = new Model(&shader2, "models/tree.obj", "models/");
-	racebanner = new Model(&shader, "models/racebanner.obj", "models/");
-	line = new Model(&shader4, "models/line.obj", "models/");
-	line2 = new Model(&shader4, "models/line.obj", "models/");
-	line3 = new Model(&shader4, "models/line.obj", "models/");
-	line4 = new Model(&shader4, "models/line.obj", "models/");
-	line5 = new Model(&shader4, "models/line.obj", "models/");
-	line6 = new Model(&shader4, "models/line.obj", "models/");
-	line7 = new Model(&shader4, "models/line.obj", "models/");
-	line8 = new Model(&shader4, "models/line.obj", "models/");
-	line9 = new Model(&shader4, "models/line.obj", "models/");
-	line10 = new Model(&shader4, "models/line.obj", "models/");
-	line11 = new Model(&shader4, "models/line.obj", "models/");
-	line12 = new Model(&shader4, "models/line.obj", "models/");
-	line13 = new Model(&shader4, "models/line.obj", "models/");
-	line14 = new Model(&shader4, "models/line.obj", "models/");
-	building = new Model(&shader6, "models/building.obj", "models/");
-	tube = new Model(&shader5, "models/tube.obj", "models/");
-	arrow = new Model(&shader5, "models/arrow.obj", "models/");
-	billboard = new Model(&shader4, "models/billboard.obj", "models/");
-	ring = new Model(&shader4, "models/ring.obj", "models/");
-	billboard2 = new Model(&shader4, "models/billboard.obj", "models/");
-	text = new Model(&shader3, "models/text.obj", "models/");
-	text2 = new Model(&shader3, "models/text2.obj", "models/");
+	car = new Model(&shaderWhite, "models/dodge-challenger_model.obj", "models/");
+	startingLine = new Model(&shaderGreen, "models/plane.obj", "models/");
+	platform1 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform2 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform3 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform4 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform5 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform6 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform7 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform8 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform9 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform10 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	platform11 = new Model(&shaderBlack, "models/plane.obj", "models/");
+	bleachers = new Model(&shaderBrown, "models/bleachers.obj", "models/");
+	pressbox = new Model(&shaderBrown, "models/pressbox.obj", "models/");
+	field = new Model(&shaderGreen, "models/plane.obj", "models/");
+	tree = new Model(&shaderGreen, "models/tree.obj", "models/");
+	tree2 = new Model(&shaderGreen, "models/tree.obj", "models/");
+	tree3 = new Model(&shaderGreen, "models/tree.obj", "models/");
+	tree4 = new Model(&shaderGreen, "models/tree.obj", "models/");
+	tree5 = new Model(&shaderGreen, "models/tree.obj", "models/");
+	tree6 = new Model(&shaderGreen, "models/tree.obj", "models/");
+	racebanner = new Model(&shaderWhite, "models/racebanner.obj", "models/");
+	line = new Model(&shaderYellow, "models/line.obj", "models/");
+	line2 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line3 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line4 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line5 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line6 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line7 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line8 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line9 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line10 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line11 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line12 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line13 = new Model(&shaderYellow, "models/line.obj", "models/");
+	line14 = new Model(&shaderYellow, "models/line.obj", "models/");
+	building = new Model(&shaderBlue, "models/building.obj", "models/");
+	tube = new Model(&shaderRed, "models/tube.obj", "models/");
+	arrow = new Model(&shaderRed, "models/arrow.obj", "models/");
+	billboard = new Model(&shaderYellow, "models/billboard.obj", "models/");
+	ring = new Model(&shaderYellow, "models/ring.obj", "models/");
+	billboard2 = new Model(&shaderYellow, "models/billboard.obj", "models/");
+	text = new Model(&shaderBlack, "models/text.obj", "models/");
+	text2 = new Model(&shaderBlack, "models/text2.obj", "models/");
 	//wheel1 = new Model(&shader, "models/wheel1.obj", "models/");
 	glutMainLoop();
 
