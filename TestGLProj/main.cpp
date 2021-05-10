@@ -74,6 +74,15 @@ float rot;
 bool thirdPerson = false;
 bool alt = true;
 bool collision = false;
+bool firstTurn = true;
+bool secondTurn = true;
+bool thirdTurn = true;
+bool fourthTurn = true;
+bool fifthTurn = true;
+bool sixthTurn = true;
+bool seventhTurn = true;
+bool eigthTurn = true;
+bool ninthTurn = true;
 //Model *sphere;
 glm::mat4 projection; // projection matrix
 glm::mat4 view; // where the camera is looking
@@ -99,6 +108,7 @@ float cameraheight = 5;
 float aiCarx = 0;
 float aiCary = -2;
 float aiCarz = 0;
+float aiRotate = 0.0f;
 //End
 float angle = 0;
 enum key_state { NOTPUSHED, PUSHED } keyarr[256];
@@ -184,11 +194,59 @@ void dumpInfo(void)
 /*This gets called when the OpenGL is asked to display. This is where all the main rendering calls go*/
 void display(void)
 {
-	if (aiCarz < -49.0f && aiCarz > -50.0f) {
-		//model = glm::rotate(model, glm::radians(45.0f), 0.0f, 1.0f, 0.0f); 
+	if (aiCarz < -3.0f && !ninthTurn) {
+		aiCarz = 0.0f;
+	}
+	else if (aiCarx > 0.0f && !eigthTurn) {
+		ninthTurn = false;
+		aiRotate = 0.0f;
+		aiCarz -= 0.3f;
+	}
+	else if (aiCarz < 49.0f && !seventhTurn) {
+		eigthTurn = false;
+		aiRotate = 270.0f;
+		aiCarx += 0.3f;
+	}
+	else if (aiCarx > -90.0f && !sixthTurn) {
+		seventhTurn = false;
+		aiRotate = 0.0f;
+		aiCarz -= 0.3f;
+	}
+	else if (aiCarz > 89.0f && !fifthTurn) {
+		sixthTurn = false;
+		aiRotate = 270.0f;
+		aiCarx += 0.3f;
+	}
+	else if (aiCarx < -236.0f && !fourthTurn) {
+		fifthTurn = false;
+		aiRotate = 180.0f;
+		aiCarz += 0.3f;
+	}
+	else if (aiCarz > -55.0f && !thirdTurn) {
+		fourthTurn = false;
+		aiRotate = 90.0f;
+		aiCarx -= 0.3f;
+	}
+	else if (aiCarx < -140.0f && !secondTurn) {
+		thirdTurn = false;
+		aiRotate = 180.0f;
+		aiCarz += 0.3f;
+	}
+	else if (aiCarz < -100.0f && !firstTurn) {
+		secondTurn = false;
+		aiRotate = 90.0f;
+		aiCarx -= 0.3f;
+	}
+	else if (aiCarx < -100.0f && aiRotate == 90.0f && secondTurn) {
+		firstTurn = false;
+		aiRotate = 0.0f;
+	}
+	else if (aiCarz < -54.0f && aiCarz > -55.0f && firstTurn) {
+		aiRotate = 90.0f;
+		aiCarx -= 0.3f;
 	}
 	else {
-		aiCarz -= 0.3;
+		aiCarz -= 0.3f;
 	}
 	if (thirdPerson) {
 		eye = eye2;
@@ -204,7 +262,7 @@ void display(void)
 	view = glm::lookAt(glm::vec3(move - (glm::rotate(rotation, 0.0f, 1.0f, 0.0f) * lookatdirection * cameradistance) + glm::vec4(0.0f, cameraheight, 0.0f, 0.0f)), glm::vec3(move), glm::vec3(up));
 	carTrans = glm::translate(glm::vec3(move)) * glm::rotate(rotation + turning, 0.0f, 1.0f, 0.0f);
 	car->render(view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f), projection);
-	aiCar->render(view * model * glm::translate(aiCarx, -2.0f, aiCarz) * glm::scale(1.5f, 2.5f, 1.0f), projection);
+	aiCar->render(view * model * glm::translate(aiCarx, -2.0f, aiCarz) * glm::rotate(aiRotate, 0.0f, 1.0f, 0.0f) * glm::scale(1.5f, 2.5f, 1.0f) , projection);
 	temp = view * carTrans * glm::translate(0.0f, -2.0f, 00.0f) * glm::scale(1.5f, 2.5f, 1.0f);
 	carPos = glm::vec3(move);
 
@@ -338,7 +396,7 @@ void keyboard(unsigned char key, int x, int y)
 		keyarr['s'] = PUSHED;
 	}
 	if (key == 'p') {
-		printf("Car's position: (%f %f %f)\n", carPos.x, carPos.y, carPos.z);
+		printf("Car's position: (%f %f %f)\n", aiCarx, aiCarz);
 	}
 }
 
