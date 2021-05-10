@@ -1,19 +1,22 @@
 Racing-Game-Project! Authors: Xavier Campa, Jobe Powell, Christopher Yang, Corbin Styles
 
-What is currently completed so far:
-Car Object with black color
-Car Controlls, subject to change
-Track with white color and green starting line
-Aerial Camera View
-Work in progress 3rd person view
-Ability to toggle between Aerial View and 3rd Person View
+What has been completed:
+Car Object with with color
+Ai Car Object with white color
+Car Controlls
+Track with black color, yellow lines, and green starting line
+3rd Person Camera
+Over objects in the world, such as trees and tunnel.
+Collision detection with other items.
+Basic Lighting
+Fucntion AI Car that goes around the track once
 
 Controls:
 W - Move Forward
 A - Turn Left and move forward
 D - Turn Right and move forward
 S - Move Backwards
-T - Change to 3rd Person Camera, currently in progress. For best experience, enter into 3rd Person Camera after running project
-B - Bird's Eye View Camera.
+
+Objeciton: Beat the Ai Ghost Car without leaving the track!
 
 Project should execute with no issues.
